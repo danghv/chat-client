@@ -18,7 +18,7 @@ export default class Chat extends React.Component {
                 $limit: 25
             }
         })
-        await this.setState({messages: result.data})
+        await this.setState({messages: result.data.reverse()})
     }
     submitMessage = async (e) => {
         e.preventDefault()
@@ -29,8 +29,10 @@ export default class Chat extends React.Component {
         console.log('test', test)
     }
     handleSubmit = async (e) => {
-        await this.submitMessage(e)
+        const newMessage = await this.submitMessage(e)
+        console.log('new message...', newMessage)
         await this.fetchSomething()
+        await client.service('messages').on('created', this.fetchSomething)
     }
 
     render() {
@@ -61,7 +63,7 @@ export default class Chat extends React.Component {
                             {
                                 this.state.messages.length > 0 &&
                                 this.state.messages.map(message => (
-                                    <li>{message.text}</li>
+                                    <li key={message._id}>{message.text}</li>
                                 ))
                             }
                         </ul>
