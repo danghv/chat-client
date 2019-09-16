@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Container, Grid } from '@material-ui/core'
-import client from './feathers';
+import app from '../api/feathers'
 
 const loginAction = async (email, password) => {
         const payload = { email, password, strategy: 'local' };
-        const loginUser = await client.authenticate(payload);
+        const loginUser = await app.authenticate(payload);
         console.log('loginUser', loginUser)
+        return loginUser
     }
 const signupAction = async (email, password) => {
-        const signupUser = await client.service('users').create({ email, password })
+        const signupUser = await app.service('users').create({ email, password })
         console.log('signupUser', signupUser);
     }
 
@@ -41,8 +42,8 @@ export default function Login(props) {
                     />
                     <button
                         onClick={async () => {
-                            await loginAction(email, password)
-                            setHidden(true)
+                            const loginedUser = await loginAction(email, password)
+                            props.setUser({ ...loginedUser, email })
                         }}
                     >
                         Log in
@@ -50,7 +51,8 @@ export default function Login(props) {
                     <button
                         onClick={async () => {
                             await signupAction(email, password);
-                            await loginAction(email, password);
+                            const loginedUser = await loginAction(email, password);
+                            props.setUser(loginedUser)
                             setHidden(true)
                         }}
                     >
