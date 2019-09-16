@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { Container, Grid } from '@material-ui/core'
-import client from './feathers';
+import feathers from '../api/feathers'
 
-const loginAction = async (email, password) => {
-        const payload = { email, password, strategy: 'local' };
-        const loginUser = await client.authenticate(payload);
-        console.log('loginUser', loginUser)
+const loginAction = async (email, password, user, callback) => {
+        const accessToken = window.localStorage.getItem('feathers-jwt')
+        if (accessToken) {
+            console.log(accessToken)
+            callback({ ...user, email })
+        } else {
+            const payload = { email, password, strategy: 'local' };
+            const loginUser = await feathers.rest.authenticate(payload)
+            const loginUserSocket = await feathers.socketio.authenticate()
+            console.log('loginUser', loginUser, loginUserSocket)
+            return loginUser
+        }
+        
     }
 const signupAction = async (email, password) => {
-        const signupUser = await client.service('users').create({ email, password })
+        const signupUser = await feathers.rest.service('users').create({ email, password })
         console.log('signupUser', signupUser);
     }
 
@@ -40,17 +49,15 @@ export default function Login(props) {
                         onChange={(event) => setPassword(event.target.value)}
                     />
                     <button
-                        onClick={async () => {
-                            await loginAction(email, password)
-                            setHidden(true)
-                        }}
+                        onClick={async () => await loginAction(email, password, props.user, props.setUser)}
                     >
                         Log in
                     </button>
                     <button
                         onClick={async () => {
                             await signupAction(email, password);
-                            await loginAction(email, password);
+                            const loginedUser = await loginAction(email, password);
+                            props.setUser(loginedUser)
                             setHidden(true)
                         }}
                     >
