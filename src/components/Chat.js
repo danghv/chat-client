@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Grid } from '@material-ui/core'
+import Container from '@material-ui/core/Container'
+import Grid from '@material-ui/core/Grid'
 
 import feathers from '../api/feathers'
 
@@ -26,6 +27,7 @@ const Chat = () => {
 
   useEffect(() => {
     fetchAllMessages(setMessages)
+    feathers.socketio.service('messages').on('dang-event', data => console.log('data...', data))
   }, [])
   console.log('messages', messages)
 

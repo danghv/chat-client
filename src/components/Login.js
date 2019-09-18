@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Container, Grid } from '@material-ui/core'
+import Container from '@material-ui/core/Container'
+import Grid from '@material-ui/core/Grid'
 import feathers from '../api/feathers'
 
 const loginAction = async (email, password) => {
-        const payload = { email, password, strategy: 'local' }
-            const loginUser = await feathers.rest.authenticate(payload)
-            const loginUserSocket = await feathers.socketio.authenticate()
-            console.log('loginUser', loginUser, loginUserSocket)
-            return loginUser
-        
+        const payload = { email, password, strategy: 'local' };
+        const loginUser = await feathers.rest.authenticate(payload);
+        console.log('loginUser', loginUser)
+
+        return loginUser
     }
 const signupAction = async (email, password) => {
         const signupUser = await feathers.rest.service('users').create({ email, password })
@@ -19,6 +19,7 @@ export default function Login(props) {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const { setHidden, setUser } = props;
+    
     return (
         <Container>
             <Grid container>
