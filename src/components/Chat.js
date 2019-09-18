@@ -31,13 +31,15 @@ const Chat = () => {
 
   useEffect(() => {
     async function fetchAllMessages() {
-      const messages = await app.service('messages').find({
-        query: {
-          $sort: { createdAt: -1 },
-          $limit: 100,
-        }
-      })
-      setMessages(messages.data.reverse())
+      // const messages = await app.service('messages').find({
+      //   query: {
+      //     $sort: { createdAt: -1 },
+      //     $limit: 100,
+      //   }
+      // })
+      const messages = await app.service('messages').find({})
+      console.log('messages...', messages)
+      setMessages(messages.reverse())
     }
     fetchAllMessages()
   }, [messages])
@@ -66,7 +68,7 @@ const Chat = () => {
         </Grid>
         <Grid item xs={8}>
           <main>
-            <ul>{messages.map(message => <li key={message._id}>{message.text}</li>)}</ul>
+            <ul>{messages.map(message => <li key={message.id}>{message.text}</li>)}</ul>
           </main>
           <form onSubmit={(e) => handleSubmit(e, text, setText)}>
             <input
