@@ -5,8 +5,7 @@ import feathers from '../api/feathers'
 
 const handleSubmit = async (e, text, setText, setMessages) => {
   e.preventDefault()
-  const message = await feathers.rest.service('messages').create({ text })
-  console.log('message', message)
+  await feathers.rest.service('messages').create({ text })
   fetchAllMessages(setMessages)
   setText('')
 }
@@ -27,9 +26,6 @@ const Chat = () => {
 
   useEffect(() => {
     fetchAllMessages(setMessages)
-    feathers.socketio.service('messages').on('created', (params) => {
-      console.log('A new message have been created', params)
-    })
   }, [])
   console.log('messages', messages)
 

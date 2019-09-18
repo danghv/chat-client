@@ -16,7 +16,7 @@ export default class Test extends React.Component {
     render() {
         return (
             <h1>{this.state.data.length > 0 && this.state.data[0].text}</h1>
-        );
+        )
     }
 }
 

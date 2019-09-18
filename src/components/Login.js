@@ -2,18 +2,12 @@ import React, { useState } from 'react';
 import { Container, Grid } from '@material-ui/core'
 import feathers from '../api/feathers'
 
-const loginAction = async (email, password, user, callback) => {
-        const accessToken = window.localStorage.getItem('feathers-jwt')
-        if (accessToken) {
-            console.log(accessToken)
-            callback({ ...user, email })
-        } else {
-            const payload = { email, password, strategy: 'local' };
+const loginAction = async (email, password) => {
+        const payload = { email, password, strategy: 'local' }
             const loginUser = await feathers.rest.authenticate(payload)
             const loginUserSocket = await feathers.socketio.authenticate()
             console.log('loginUser', loginUser, loginUserSocket)
             return loginUser
-        }
         
     }
 const signupAction = async (email, password) => {
@@ -24,7 +18,7 @@ const signupAction = async (email, password) => {
 export default function Login(props) {
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
-    const { setHidden } = props;
+    const { setHidden, setUser } = props;
     return (
         <Container>
             <Grid container>
@@ -49,7 +43,10 @@ export default function Login(props) {
                         onChange={(event) => setPassword(event.target.value)}
                     />
                     <button
-                        onClick={async () => await loginAction(email, password, props.user, props.setUser)}
+                        onClick={async () => {
+                            const loginUser = await loginAction(email, password)
+                            setUser(loginUser)
+                        }}
                     >
                         Log in
                     </button>
