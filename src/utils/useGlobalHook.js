@@ -26,9 +26,37 @@ function useCustom(store, React, mapState, mapActions) {
       : originalHook
     store.listeners.push(newListener)
     newListener.run(store.state)
+
     return () => {
       store.listeners = store.listeners.filter(listener => listener !== newListener)
     }
   }, [])
+
   return [state, actions]
 }
+
+function associateActions(store, actions) {
+  const associatedActions = {}
+  Object.keys(actions).forEach(key => {
+    if (typeof actions[key] === 'function') {
+      associatedActions[key] = actions[key].bind(null, store)
+    }
+    if (typeof actions[key] === 'object') {
+      associatedActions[key] = associateActions(store, actions[key])
+    }
+  })
+  
+  return associatedActions
+}
+
+const useStore = (React, initialState, actions, initializer) => {
+  const store = { state: initialState, listeners: [] }
+  store.setState = setState.bind(null, store)
+  store.actions = associateActions(store, actions)
+
+  if (initializer) initializer(store)
+
+  return useCustom.bind(null, store, React)
+}
+
+export default useStore

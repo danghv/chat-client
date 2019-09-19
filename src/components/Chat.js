@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Grid } from '@material-ui/core'
+import Container from '@material-ui/core/Container'
+import Grid from '@material-ui/core/Grid'
 
 import app from '../api/feathers'
-// import client from '../api/feathers'
-// submitMessage = async (e) => {
-//     e.preventDefault()
-//     const test = await client.service('messages').create({
-//         text: this.state.text,
-//     })
-//     this.setState({text: ''})
-//     console.log('test', test)
-// }
-// handleSubmit = async (e) => {
-//     const newMessage = await this.submitMessage(e)
-//     console.log('new message...', newMessage)
-//     await this.fetchSomething()
-//     await client.service('messages').on('created', this.fetchSomething)
-// }
 
 const handleSubmit = async (e, text, setText) => {
   e.preventDefault()
@@ -31,19 +17,15 @@ const Chat = () => {
 
   useEffect(() => {
     async function fetchAllMessages() {
-      // const messages = await app.service('messages').find({
-      //   query: {
-      //     $sort: { createdAt: -1 },
-      //     $limit: 100,
-      //   }
-      // })
       const messages = await app.service('messages').find({})
       console.log('messages...', messages)
       setMessages(messages.reverse())
     }
     fetchAllMessages()
-  }, [messages])
-  // console.log('messages', messages)
+    app.service('messages').on('created', data => {
+      console.log('data...', data)
+    })
+  }, [])
 
   return (
     <Container>

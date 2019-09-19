@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Container, Grid } from '@material-ui/core'
+import Container from '@material-ui/core/Container'
+import Grid from '@material-ui/core/Grid'
 import app from '../api/feathers'
 
 const loginAction = async (email, password) => {
