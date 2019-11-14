@@ -6,6 +6,7 @@ function updateField(name, event, payload, setPayload) {
 }
 
 async function login(payload, setPayload) {
+  // console.log('login...', payload)
   const { email, password } = payload
   try {
     await client.authenticate({

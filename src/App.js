@@ -1,54 +1,45 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React from 'react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom"
 
-import Login from './Login'
-import Chat from './Chat'
-import client from './feathers'
+import Menu from './MenuComponents'
+import Slideshow from './components/Images/Slideshow'
+import SlideshowGallery from './components/Images/SlideshowGallery'
+import ModalImage from './components/Images/ModalImage'
 
-const Application = () => {
-  const [appState, setAppState] = useState({ messages: [], users: [] })
+const slides = [
+  { src: 'images/banner1.jpg', caption: 'Caption Text' },
+  { src: 'images/banner2.jpg', caption: 'Caption Two' },
+  { src: 'images/banner3.jpg', caption: 'Caption Three' }
+]
 
-  useEffect(() => {
-    const CancelToken = axios.CancelToken;
-    const source = CancelToken.source();
-    const messages = client.service('messages')
-    const users = client.service('users')
+const gallerySlides = [
+  { src: 'images/gallery1.jpg', caption: 'Caption Text' },
+  { src: 'images/gallery2.jpg', caption: 'Caption Two' },
+  { src: 'images/gallery3.jpg', caption: 'Caption Three' },
+  { src: 'images/gallery4.jpg', caption: 'Caption Four' },
+  { src: 'images/gallery5.jpg', caption: 'Caption Five' },
+  { src: 'images/gallery6.jpg', caption: 'Caption Six' }
+]
 
-    client.on('authenticated', login => {
-      Promise.all([
-        messages.find({
-          query: {
-            $sort: { createdAt: -1 },
-            $limit: 25
-          }
-        }),
-        users.find()
-      ]).then(([messagePage, userPage]) => {
-        const messages = messagePage.data.reverse()
-        const users = userPage.data
-        setAppState({ login, messages, users })
-      })
-    })
+const modalImage = { src: 'images/modal-image.jpg' }
 
-    messages.on('created', message => setAppState({ ...appState, messages: appState.messages.concat(message) }))
-
-    users.on('created', user => setAppState({ ...appState, users: appState.users.concat(user) }))
-
-    client.on('logout', () => setAppState({ login: null, messages: null, users: null }))
-
-    return () => {
-      source.cancel()
-    }
-  }, [appState])
-
-  if (appState.login === 'undefined') {
-    return <main className="container text-center">
-      <h1>Loading...</h1>
-    </main>
-  } else if (appState.login) {
-    return <Chat messages={appState.messages} users={appState.users} />
-  }
-  return <Login />
-}
+const Application = () => (
+  <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+    <Router>
+      <Menu />
+      <div style={{ flex: 5 }}>
+        <Switch>
+          <Route exact path="/slideshow"><Slideshow slides={slides}/></Route>
+          <Route path="/slideshow-gallery"><SlideshowGallery slides={gallerySlides}/></Route>
+          <Route path="/modal-images"><ModalImage image={modalImage} /></Route>
+        </Switch>
+      </div>
+    </Router>
+  </div>
+)
 
 export default Application
